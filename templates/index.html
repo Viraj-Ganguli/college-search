@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- gets the data for the college list on the home page -->
+<h2>Colleges</h2>
+<table>
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Address</th>
+			<th>Admission Rate</th>
+		</tr>
+	</thead>
+	<tbody>
+{% for college in colleges %}
+<tr>
+	<td>
+		<a href='/college/{{college["UNITID"]}}'/>{{ college["INSTNM"] }} </td>
+	<td> {{ college["CITY"] }}, {{ college["STABBR"] }} {{college["ZIP"]}} </td>
+	<td>{{ college["ADM_RATE"] }}</td>
+</tr>
+{% endfor %}
+		
+	</tbody>
+</table>
+{% endblock %}

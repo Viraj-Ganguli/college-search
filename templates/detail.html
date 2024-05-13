@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- displays the college information -->
+<h2>{{ college["INSTNM"] }}</h2>
+<table>
+<tr><td><strong>Website:</strong> <a href='//{{college["INSTURL"]}}'>{{ college["INSTURL"] }}</a></td></tr>
+<tr><td><strong>Address:</strong> {{ college["CITY"] }}, {{ college["STABBR"] }} {{college["ZIP"]}} </td></tr>
+<tr><td><strong>Admission Rate:</strong> {{ college["ADM_RATE"] }}</td></tr>
+<tr><td><strong>Average SAT:</strong> {{ college["SAT_AVG"] }}</td>	</tr>
+<tr><td><strong>In-state Tuition:</strong> {{ college["TUITIONFEE_IN"] }}</td></tr>
+<tr><td><strong>Out-of-state Tuition:</strong> {{ college["TUITIONFEE_OUT"] }}</td></tr>
+<tr><td><strong>Undergraduate Number of Students:</strong> {{ college["UGDS"] }}</td></tr>
+</table>
+
+<!-- Creates the map -->
+<div class="map-container">
+  <iframe
+	width="500"
+	height="350"
+	frameborder="0"
+	style="border:0"
+	src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBR5RY-Y3sGcCacuN8Xy1auBDne78xjQVo&q={{college['LATITUDE']}},{{college['LONGITUDE']}}"
+	allowfullscreen>
+  </iframe>
+</div>
+
+{% endblock %}

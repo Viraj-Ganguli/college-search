@@ -2,25 +2,159 @@
 
 {% block content %}
 <!-- gets the data for the college list on the home page -->
-<h2>Colleges</h2>
-<table>
-	<thead>
-		<tr>
-			<th>Name</th>
-			<th>Address</th>
-			<th>Admission Rate</th>
-		</tr>
-	</thead>
-	<tbody>
-{% for college in colleges %}
-<tr>
-	<td>
-		<a href='/college/{{college["UNITID"]}}'/>{{ college["INSTNM"] }} </td>
-	<td> {{ college["CITY"] }}, {{ college["STABBR"] }} {{college["ZIP"]}} </td>
-	<td>{{ college["ADM_RATE"] }}</td>
-</tr>
-{% endfor %}
-		
-	</tbody>
-</table>
+<div class="container">
+  <div class="topnav">
+    <a class="active" href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <input type="text" placeholder="Search.." id="searchInput">
+    <button onclick="search()">Search</button>
+  </div>
+
+  <div class="filters">
+    <h2>Filters</h2>
+    <div>
+      <label for="minAdmission">Min Admission Rate:</label>
+      <input type="number" id="minAdmission" name="minAdmission" min="0"  max="100" value= 0>
+    </div>
+    <div>
+      <label for="maxAdmission">Max Admission Rate:</label>
+      <input type="number" id="maxAdmission" name="maxAdmission" min="0" max="100" value="100">
+    </div>
+    <div>
+      <label for="minTuition">Min Tuition:</label>
+      <input type="number" id="minTuition" name="minTuition" min="0" step="1000" value="0">
+    </div>
+    <div>
+      <label for="maxTuition">Max Tuition:</label>
+      <input type="number" id="maxTuition" name="maxTuition" min="0" step="1000" value="100000">
+    </div>
+    <div>
+      <label for="minSAT">Min SAT Score:</label>
+      <input type="number" id="minSAT" name="minSAT" min="400" max="1600" step="10" value="400">
+    </div>
+    <div>
+      <label for="maxSAT">Max SAT Score:</label>
+      <input type="number" id="maxSAT" name="maxSAT" min="400" max="1600" step="10" value="1600">
+    </div>
+    <div>
+      <label for="stateDropdown">State:</label>
+      <select id="stateDropdown">
+        <option value="">Any</option>
+        <option value="AL">Alabama</option>
+        <option value="AL">Alabama</option>
+          <option value="AK">Alaska</option>
+          <option value="AZ">Arizona</option>
+          <option value="AR">Arkansas</option>
+          <option value="CA">California</option>
+          <option value="CO">Colorado</option>
+          <option value="CT">Connecticut</option>
+          <option value="DE">Delaware</option>
+          <option value="FL">Florida</option>
+          <option value="GA">Georgia</option>
+          <option value="HI">Hawaii</option>
+          <option value="ID">Idaho</option>
+          <option value="IL">Illinois</option>
+          <option value="IN">Indiana</option>
+          <option value="IA">Iowa</option>
+          <option value="KS">Kansas</option>
+          <option value="KY">Kentucky</option>
+          <option value="LA">Louisiana</option>
+          <option value="ME">Maine</option>
+          <option value="MD">Maryland</option>
+          <option value="MA">Massachusetts</option>
+          <option value="MI">Michigan</option>
+          <option value="MN">Minnesota</option>
+          <option value="MS">Mississippi</option>
+          <option value="MO">Missouri</option>
+          <option value="MT">Montana</option>
+          <option value="NE">Nebraska</option>
+          <option value="NV">Nevada</option>
+          <option value="NH">New Hampshire</option>
+          <option value="NJ">New Jersey</option>
+          <option value="NM">New Mexico</option>
+          <option value="NY">New York</option>
+          <option value="NC">North Carolina</option>
+          <option value="ND">North Dakota</option>
+          <option value="OH">Ohio</option>
+          <option value="OK">Oklahoma</option>
+          <option value="OR">Oregon</option>
+          <option value="PA">Pennsylvania</option>
+          <option value="RI">Rhode Island</option>
+          <option value="SC">South Carolina</option>
+          <option value="SD">South Dakota</option>
+          <option value="TN">Tennessee</option>
+          <option value="TX">Texas</option>
+          <option value="UT">Utah</option>
+          <option value="VT">Vermont</option>
+          <option value="VA">Virginia</option>
+          <option value="WA">Washington</option>
+          <option value="WV">West Virginia</option>
+          <option value="WI">Wisconsin</option>
+          <option value="WY">Wyoming</option>
+      </select>
+    </div>
+    <!-- Add the button for applying filters -->
+    <button onclick="applyFilters()">Apply Filters</button>
+  </div>
+
+  <h2>Colleges</h2>
+  <table id="collegeTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Admission Rate</th>
+      </tr>
+    </thead>
+    <tbody id="collegeTableBody">
+      {% for college in colleges %}
+      <tr data-admission="{{ college['ADM_RATE'] }}" data-tuition="{{ college['TUITIONFEE_IN'] }}" data-sat="{{ college['SAT_AVG'] }}" data-state="{{ college['STABBR'] }}">
+        <td>
+          <a href='/college/{{college["UNITID"]}}'>{{ college["INSTNM"] }}</a>
+        </td>
+        <td>{{ college["CITY"] }}, {{ college["STABBR"] }} {{college["ZIP"]}}</td>
+        <td>{{ college["ADM_RATE"] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 {% endblock %}
+
+<script>
+  // Function to apply filters
+  function applyFilters() {
+    // Retrieve filter values
+    var minAdmission = document.getElementById("minAdmission").value;
+    var maxAdmission = document.getElementById("maxAdmission").value;
+    var minTuition = document.getElementById("minTuition").value;
+    var maxTuition = document.getElementById("maxTuition").value;
+    var minSAT = document.getElementById("minSAT").value;
+    var maxSAT = document.getElementById("maxSAT").value;
+    var selectedState = document.getElementById("stateDropdown").value;
+
+    // Select the table body
+    var tableBody = document.getElementById("collegeTableBody");
+
+    // Loop through each row in the table body
+    for (var i = 0; i < tableBody.rows.length; i++) {
+      var row = tableBody.rows[i];
+      var admission = parseFloat(row.getAttribute("data-admission"));
+      var tuition = parseFloat(row.getAttribute("data-tuition"));
+      var sat = parseFloat(row.getAttribute("data-sat"));
+      var state = row.getAttribute("data-state");
+
+      // Check if the row meets the filter criteria
+      if ((admission < minAdmission || admission > maxAdmission) ||
+          (tuition < minTuition || tuition > maxTuition) ||
+          (sat < minSAT || sat > maxSAT) ||
+          (selectedState !== "" && state !== selectedState)) {
+        row.style.display = "none";
+      } else {
+        row.style.display = "";
+      }
+    }
+  }
+</script>

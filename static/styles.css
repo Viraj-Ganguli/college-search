@@ -155,11 +155,12 @@ body {
 }
 
 .filters {
-  flex: 1;
-  padding: 20px;
-  border-right: 1px solid #ccc;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    padding: 20px;
+    margin-top: 20px;
+    width: 300px; 
 }
-
 .college-list {
   flex: 3;
   padding: 20px;

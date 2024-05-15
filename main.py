@@ -7,7 +7,12 @@ app = Flask(__name__)
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-def filter_colleges(colleges, min_admission, max_admission, min_tuition, max_tuition, min_sat, max_sat, state, tuition_type):
+def search_schools(searchTerm):
+    return searchTerm.lower() in college['INSTNM'].lower()
+
+
+
+def filter_colleges(colleges, min_admission, max_admission, min_tuition, max_tuition, min_sat, max_sat, state, tuition_type, searchTerm):
     filtered_colleges = []
     for college in colleges:
         # Convert strings to floats for comparison
@@ -23,11 +28,14 @@ def filter_colleges(colleges, min_admission, max_admission, min_tuition, max_tui
         sat_avg = float(sat_avg_str)
         tuition = float(tuition_str)
 
+
+
         # Apply filters
         if (adm_rate >= min_admission and adm_rate <= max_admission and
             tuition >= min_tuition and tuition <= max_tuition and
             sat_avg >= min_sat and sat_avg <= max_sat and
-            (state == '' or college['STABBR'] == state)):
+            (state == '' or college['STABBR'] == state) and 
+        search_schools(college, searchTerm)):
             filtered_colleges.append(college)
 
     return filtered_colleges
@@ -47,6 +55,7 @@ def main():
     print("======================", request.args.get("tuitionType", ""), "============================")
     tuition_type = request.args.get("tuitionType", "")
     state = request.args.get("state", "")
+    searchTerm = request.args.get("searchTerm", "")
 
 
 
@@ -56,7 +65,7 @@ def main():
         cursor.execute("SELECT UNITID, INSTNM, CITY, STABBR, ZIP, INSTURL, ADM_RATE, SAT_AVG, TUITIONFEE_IN, TUITIONFEE_OUT FROM colleges")
         rows = cursor.fetchall()
 
-    filtered_colleges = filter_colleges(rows, min_admission_decimal, max_admission_decimal, min_tuition, max_tuition, min_sat, max_sat, state, tuition_type)
+    filtered_colleges = filter_colleges(rows, min_admission_decimal, max_admission_decimal, min_tuition, max_tuition, min_sat, max_sat, state, tuition_type, searchTerm)
 
     return render_template("index.html", colleges=filtered_colleges, tuition_type=tuition_type)
 

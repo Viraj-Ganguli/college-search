@@ -4,7 +4,7 @@
 <div class="container">
   <div class="filters">
     <h2>Filters</h2>
-    <input type="text" placeholder="Search.." value = >
+    <input type="text" id="searchTerm" placeholder="Search.." >
     <div>
       <label for="minAdmission">Min Admission Rate:</label>
       <input type="number" id="minAdmission" name="minAdmission"  min="0"  max="100" value="0">
@@ -140,9 +140,10 @@
     var maxSAT = document.getElementById("maxSAT").value;
     var state = document.getElementById("stateDropdown").value;
     var tuitionType = document.getElementById("tuitionType").value;
+    var searchTerm = document.getElementById("searchTerm").value;
 
 
-    window.location.href = "/?minAdmission=" + minAdmission + "&maxAdmission=" + maxAdmission + "&minTuition=" + minTuition + "&maxTuition=" + maxTuition + "&minSAT=" + minSAT + "&maxSAT=" + maxSAT + "&tuitionType=" + tuitionType + "&state=" + state;
+    window.location.href = "/?minAdmission=" + minAdmission + "&maxAdmission=" + maxAdmission + "&minTuition=" + minTuition + "&maxTuition=" + maxTuition + "&minSAT=" + minSAT + "&maxSAT=" + maxSAT + "&tuitionType=" + tuitionType + "&state=" + state + "&searchTerm=" + searchTerm;
   }
 
   function initializeFilters() {
@@ -155,6 +156,7 @@
     var maxSAT = urlParams.get("maxSAT") || 1600;
     var state = urlParams.get("state") || "";
     var tuitionType = urlParams.get("tuitionType") || "Out-of-State";
+    var searchTerm = urlParams.get("searchTerm") || "";
 
     document.getElementById("minAdmission").value = minAdmission;
     document.getElementById("maxAdmission").value = maxAdmission;
@@ -164,6 +166,7 @@
     document.getElementById("maxSAT").value = maxSAT;
     document.getElementById("stateDropdown").value = state;
     document.getElementById("tuitionType").value = tuitionType;
+    document.getElementById("searchTerm").value = searchTerm;
   }
 
   window.onload = initializeFilters;

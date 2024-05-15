@@ -7,7 +7,7 @@ app = Flask(__name__)
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-def search_schools(searchTerm):
+def search_schools(college, searchTerm):
     return searchTerm.lower() in college['INSTNM'].lower()
 
 

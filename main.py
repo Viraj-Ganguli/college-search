@@ -7,12 +7,7 @@ app = Flask(__name__)
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
-def search_schools(college, searchTerm):
-    return searchTerm.lower() in college['INSTNM'].lower()
-
-
-
-def filter_colleges(colleges, min_admission, max_admission, min_tuition, max_tuition, min_sat, max_sat, state, tuition_type, searchTerm):
+def filter_colleges(colleges, min_admission, max_admission, min_tuition, max_tuition, min_sat, max_sat, state, tuition_type):
     filtered_colleges = []
     for college in colleges:
         # Convert strings to floats for comparison
@@ -28,14 +23,11 @@ def filter_colleges(colleges, min_admission, max_admission, min_tuition, max_tui
         sat_avg = float(sat_avg_str)
         tuition = float(tuition_str)
 
-
-
         # Apply filters
         if (adm_rate >= min_admission and adm_rate <= max_admission and
             tuition >= min_tuition and tuition <= max_tuition and
             sat_avg >= min_sat and sat_avg <= max_sat and
-            (state == '' or college['STABBR'] == state) and 
-        search_schools(college, searchTerm)):
+            (state == '' or college['STABBR'] == state)):
             filtered_colleges.append(college)
 
     return filtered_colleges
@@ -55,7 +47,6 @@ def main():
     print("======================", request.args.get("tuitionType", ""), "============================")
     tuition_type = request.args.get("tuitionType", "")
     state = request.args.get("state", "")
-    searchTerm = request.args.get("searchTerm", "")
 
 
 
@@ -65,27 +56,22 @@ def main():
         cursor.execute("SELECT UNITID, INSTNM, CITY, STABBR, ZIP, INSTURL, ADM_RATE, SAT_AVG, TUITIONFEE_IN, TUITIONFEE_OUT FROM colleges")
         rows = cursor.fetchall()
 
-    filtered_colleges = filter_colleges(rows, min_admission_decimal, max_admission_decimal, min_tuition, max_tuition, min_sat, max_sat, state, tuition_type, searchTerm)
+    filtered_colleges = filter_colleges(rows, min_admission_decimal, max_admission_decimal, min_tuition, max_tuition, min_sat, max_sat, state, tuition_type)
 
     return render_template("index.html", colleges=filtered_colleges, tuition_type=tuition_type)
 
 
 # College detail page
-@app.route('/')
-def home():
-    # Logic to display the home page
-    return render_template('home.html')
-
-@app.route('/college_data/<college_id>')
-def college_data(college_id):
+@app.route('/college/<college_id>')
+def detail(college_id):
     with sqlite3.connect('college.db') as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
-        cursor.execute("""
-            SELECT ethnicity, percentage
-            FROM student_ethnicity
-            WHERE college_id = ?""", [college_id])
-        rows = cursor.fetchall()
-        data = [{'ethnicity': row['ethnicity'], 'percentage': row['percentage']} for row in rows]
+        cursor.execute("SELECT UNITID, INSTNM, CITY, STABBR, ZIP, INSTURL, LATITUDE, LONGITUDE, ADM_RATE, SAT_AVG, COSTT4_A, TUITIONFEE_IN, TUITIONFEE_OUT, UGDS, UGDS_WHITE, UGDS_BLACK, UGDS_HISP, UGDS_ASIAN, UGDS_AIAN, UGDS_NHPI, UGDS_2MOR, UGDS_NRA, UGDS_UNKN FROM colleges WHERE UNITID=?", [college_id])
+        row = cursor.fetchone()
 
-    return jsonify(data) 
+    return render_template("detail.html", college=row)
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8080)

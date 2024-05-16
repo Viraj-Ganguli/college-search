@@ -67,16 +67,18 @@ def college_detail(college_id):
 
     return render_template("college_detail.html", college=college)
 
-@app.route('/college_data/<college_id>')
-def college_data(college_id):
-    with sqlite3.connect('college.db') as conn:
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT ethnicity, percentage FROM student_ethnicity WHERE college_id = ?", (college_id,))
-        rows = cursor.fetchall()
-        data = [{'ethnicity': row['ethnicity'], 'percentage': row['percentage']} for row in rows]
+@app.route('/college/<college_id>')
+def detail(college_id):
+	with sqlite3.connect('college.db') as conn:
+		conn.row_factory = sqlite3.Row
+		cursor = conn.cursor()
+		cursor.execute("SELECT UNITID, INSTNM, CITY, STABBR, ZIP, INSTURL, LATITUDE, LONGITUDE, ADM_RATE, SAT_AVG, COSTT4_A, TUITIONFEE_IN, TUITIONFEE_OUT, UGDS, UGDS_WHITE, UGDS_BLACK, UGDS_HISP, UGDS_ASIAN, UGDS_AIAN, UGDS_NHPI, UGDS_2MOR, UGDS_NRA, UGDS_UNKN FROM colleges WHERE UNITID=?", [college_id])
+		row = (cursor.fetchone())
+		
+	return render_template("detail.html", college = row)
 
-    return jsonify(data)
+
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080)

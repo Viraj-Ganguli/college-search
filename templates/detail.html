@@ -1,9 +1,47 @@
-{% extends 'base.html' %}
+% extends 'base.html' %}
 
 {% block content %}
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Acceptence Rates', 'Percent Students'],
+          ['Accepted',     {{college["ADM_RATE"]}}],
+          ['Rejected',      {{ 1- college["ADM_RATE"]}}],
+        ]);
+
+        var options = {
+          title: 'My Daily Activities'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
 
 <!-- displays the college information -->
+<h2>{{ college["INSTNM"] }}</h2>
+<table>
+<tr><td><strong>Website:</strong> <a href='//{{college["INSTURL"]}}'>{{ college["INSTURL"] }}</a></td></tr>
+<tr><td><strong>Address:</strong> {{ college["CITY"] }}, {{ college["STABBR"] }} {{college["ZIP"]}} </td></tr>
+<tr><td><strong>Admission Rate:</strong> {{ college["ADM_RATE"] }}</td></tr>
+<tr><td><strong>Average SAT:</strong> {{ college["SAT_AVG"] }}</td>	</tr>
+<tr><td><strong>In-state Tuition:</strong> {{ college["TUITIONFEE_IN"] }}</td></tr>
+<tr><td><strong>Out-of-state Tuition:</strong> {{ college["TUITIONFEE_OUT"] }}</td></tr>
+<tr><td><strong>Undergraduate Number of Students:</strong> {{ college["UGDS"] }}</td></tr>
+</table>
 
+<div id="piechart" style="width: 900px; height: 500px;"></div>
+
+<!-- Creates the map -->
 <div class="map-container">
   <iframe
 	width="500"
@@ -14,88 +52,5 @@
 	allowfullscreen>
   </iframe>
 </div>
-
-
-<h2>{{ college["INSTNM"] }}</h2>
-<table>
-  <tr>
-    <td><strong>Website:</strong> <a href="//{{college["INSTURL"]}}">{{ college["INSTURL"] }}</a></td>
-  </tr>
-  <tr>
-    <td><strong>Address:</strong> {{ college["CITY"] }}, {{ college["STABBR"] }} {{college["ZIP"]}}</td>
-  </tr>
-  <tr>
-    <td><strong>Admission Rate:</strong> {{ college["ADM_RATE"] }}</td>
-  </tr>
-  <tr>
-    <td><strong>Average SAT:</strong> {{ college["SAT_AVG"] }}</td>
-  </tr>
-  <tr>
-    <td><strong>In-state Tuition:</strong> {{ college["TUITIONFEE_IN"] }}</td>
-  </tr>
-  <tr>
-    <td><strong>Out-of-state Tuition:</strong> {{ college["TUITIONFEE_OUT"] }}</td>
-  </tr>
-  <tr>
-    <td><strong>Undergraduate Number of Students:</strong> {{ college["UGDS"] }}</td>
-  </tr>
-</table>
-
-<!-- Creates the map -->
-<div class="map-container">
-  <iframe
-    width="500"
-    height="350"
-    frameborder="0"
-    style="border:0"
-    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBR5RY-Y3sGcCacuN8Xy1auBDne78xjQVo&q={{college['LATITUDE']}},{{college['LONGITUDE']}}"
-    allowfullscreen>
-  </iframe>
-</div>
-
-<!-- Load the AJAX API -->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-  // Load the Visualization API and the corechart package.
-  google.charts.load('current', {'packages':['corechart']});
-
-  // Set a callback to run when the Google Visualization API is loaded.
-  google.charts.setOnLoadCallback(drawChart);
-
-  // Callback that creates and populates a data table, instantiates the pie chart, passes in the data and draws it.
-  function drawChart() {
-    // Fetch the data from Flask route
-    fetch('/college_data/{{ college["UNITID"] }}')
-      .then(response => response.json())
-      .then(data => {
-        // Create the data table.
-        var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn('string', 'Ethnicity');
-        dataTable.addColumn('number', 'Percentage');
-
-        // Add rows to the data table
-        data.forEach(row => {
-          dataTable.addRow([row.ethnicity, row.percentage]);
-        });
-
-        // Set chart options
-        var options = {
-          title: 'Student Ethnicity Distribution',
-          width: 400,
-          height: 300
-        };
-
-        // Instantiate and draw the chart
-        var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
-        chart.draw(dataTable, options);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
-  }
-</script>
-
-<!-- Div that will hold the pie chart -->
-<div id="chart_div"></div>
 
 {% endblock %}

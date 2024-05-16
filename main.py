@@ -88,4 +88,4 @@ def college_data(college_id):
         rows = cursor.fetchall()
         data = [{'ethnicity': row['ethnicity'], 'percentage': row['percentage']} for row in rows]
 
-    return jsonify(data)
+    return jsonify(data) 

@@ -70,11 +70,15 @@ def main():
     return render_template("index.html", colleges=filtered_colleges, tuition_type=tuition_type)
 
 
-# College detail page
-@app.route('/')
-def home():
-    # Logic to display the home page
-    return render_template('home.html')
+@app.route('/college/<college_id>')
+def college_detail(college_id):
+    with sqlite3.connect('college.db') as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM colleges WHERE UNITID = ?", (college_id,))
+        college = cursor.fetchone()
+
+    return render_template("college_detail.html", college=college)
 
 @app.route('/college_data/<college_id>')
 def college_data(college_id):

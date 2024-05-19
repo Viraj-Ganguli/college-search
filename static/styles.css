@@ -9,8 +9,6 @@ body {
     text-align: left;
 }
 
-
-
 .container {
     margin: 0 auto;
     max-width: 1200px;
@@ -149,37 +147,38 @@ body {
     border: none;
 }
 
-.container {
-  display: flex;
-  align-items: flex-start;
-}
-
-.filters {
-    background-color: #f3f3f3;
-    border-radius: 5px;
-    padding: 20px;
+.chart-container {
     margin-top: 20px;
-    width: 300px; 
-}
-.college-list {
-  flex: 3;
-  padding: 20px;
-  overflow-x: auto;
-}
-.college-list {
-    flex: 3;
-    padding: 20px;
-    overflow-x: hidden;
-    overflow-y: hidden;
 }
 
-.table-wrapper {
-    overflow-x: auto;
-    overflow-y: hidden;
-    max-width: 100%;
-    position: relative; 
+.chart-container div {
+    width: 100%;
+    height: 500px;
+    margin-bottom: 40px;
 }
 
-.table-wrapper table {
-    width: max-content;
+h2 {
+    margin-top: 20px;
+}
+
+.details-table {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.details-table th, .details-table td {
+    padding: 10px;
+    text-align: left;
+}
+
+.details-table th {
+    background-color: #f2f2f2;
+}
+
+.details-table td {
+    background-color: #fff;
+}
+
+.details-table tr:nth-child(even) td {
+    background-color: #f9f9f9;
 }

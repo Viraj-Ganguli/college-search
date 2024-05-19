@@ -1,153 +1,124 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<head>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawCharts);
 
-<!-- Home button -->
-<a href="{{ url_for('home') }}" class="btn btn-primary">Home</a>
-
-<!-- displays the college information -->
-<h2>{{ college["INSTNM"] }}</h2>
-<table>
-<tr><td><strong>Website:</strong> <a href='//{{college["INSTURL"]}}'>{{ college["INSTURL"] }}</a></td></tr>
-<tr><td><strong>Address:</strong> {{ college["CITY"] }}, {{ college["STABBR"] }} {{college["ZIP"]}} </td></tr>
-<tr><td><strong>Admission Rate:</strong> {{ college["ADM_RATE"] }}</td></tr>
-<tr><td><strong>Average SAT:</strong> {{ college["SAT_AVG"] }}</td>	</tr>
-<tr><td><strong>In-state Tuition:</strong> {{ college["TUITIONFEE_IN"] }}</td></tr>
-<tr><td><strong>Out-of-state Tuition:</strong> {{ college["TUITIONFEE_OUT"] }}</td></tr>
-<tr><td><strong>Undergraduate Number of Students:</strong> {{ college["UGDS"] }}</td></tr>
-</table>
-
-<!-- Creates the map -->
-<div class="map-container">
-  <iframe
-	width="500"
-	height="350"
-	frameborder="0"
-	style="border:0"
-	src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBR5RY-Y3sGcCacuN8Xy1auBDne78xjQVo&q={{college['LATITUDE']}},{{college['LONGITUDE']}}"
-	allowfullscreen>
-  </iframe>
-</div>
-
-<!-- Charts displaying important data -->
-<div class="charts">
-  <canvas id="admissionRateChart" width="400" height="200"></canvas>
-  <canvas id="tuitionChart" width="400" height="200"></canvas>
-  <canvas id="studentDiversityChart" width="400" height="200"></canvas>
-</div>
-
-{% endblock %}
-
-{% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  // Data for the charts
-  const admissionRate = {{ college["ADM_RATE"] }};
-  const tuitionInState = {{ college["TUITIONFEE_IN"] }};
-  const tuitionOutState = {{ college["TUITIONFEE_OUT"] }};
-  const studentDiversity = {
-    white: {{ college["UGDS_WHITE"] }},
-    black: {{ college["UGDS_BLACK"] }},
-    hispanic: {{ college["UGDS_HISP"] }},
-    asian: {{ college["UGDS_ASIAN"] }},
-    aian: {{ college["UGDS_AIAN"] }},
-    nhpi: {{ college["UGDS_NHPI"] }},
-    twomor: {{ college["UGDS_2MOR"] }},
-    nra: {{ college["UGDS_NRA"] }},
-    unkn: {{ college["UGDS_UNKN"] }}
-  };
-
-  // Admission Rate Chart
-  new Chart(document.getElementById('admissionRateChart'), {
-    type: 'bar',
-    data: {
-      labels: ['Admission Rate'],
-      datasets: [{
-        label: 'Admission Rate',
-        data: [admissionRate],
-        backgroundColor: ['rgba(75, 192, 192, 0.2)'],
-        borderColor: ['rgba(75, 192, 192, 1)'],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
+    function drawCharts() {
+      drawAcceptanceChart();
+      drawEthnicityChart();
+      drawTuitionChart();
+      drawStudentDistributionChart();
     }
-  });
 
-  // Tuition Chart
-  new Chart(document.getElementById('tuitionChart'), {
-    type: 'bar',
-    data: {
-      labels: ['In-state', 'Out-of-state'],
-      datasets: [{
-        label: 'Tuition',
-        data: [tuitionInState, tuitionOutState],
-        backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
-        borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
+    function drawAcceptanceChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Acceptance Rates', 'Percent Students'],
+        ['Accepted',     {{college["ADM_RATE"]}}],
+        ['Rejected',      {{ 1- college["ADM_RATE"] }}],
+      ]);
+
+      var options = {
+        title: 'Acceptance Rate'
+      };
+
+      var chart = new google.visualization.PieChart(document.getElementById('acceptance_piechart'));
+      chart.draw(data, options);
     }
-  });
 
-  // Student Diversity Chart
-  new Chart(document.getElementById('studentDiversityChart'), {
-    type: 'pie',
-    data: {
-      labels: ['White', 'Black', 'Hispanic', 'Asian', 'AIAN', 'NHPI', 'Two or More', 'Non-Resident Alien', 'Unknown'],
-      datasets: [{
-        label: 'Student Diversity',
-        data: Object.values(studentDiversity),
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)',
-          'rgba(199, 199, 199, 0.2)',
-          'rgba(83, 102, 255, 0.2)',
-          'rgba(155, 159, 64, 0.2)'
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-          'rgba(75, 192, 192, 1)',
-          'rgba(153, 102, 255, 1)',
-          'rgba(255, 159, 64, 1)',
-          'rgba(199, 199, 199, 1)',
-          'rgba(83, 102, 255, 1)',
-          'rgba(155, 159, 64, 1)'
-        ],
-        borderWidth: 1
-      }]
+    function drawEthnicityChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Ethnicity', 'Number of Students'],
+        ['White', {{ college["UGDS_WHITE"] }}],
+        ['Black', {{ college["UGDS_BLACK"] }}],
+        ['Hispanic', {{ college["UGDS_HISP"] }}],
+        ['Asian', {{ college["UGDS_ASIAN"] }}],
+        ['Other', {{ college["UGDS_OTHER"] }}]
+      ]);
+
+      var options = {
+        title: 'Ethnicity Breakdown'
+      };
+
+      var chart = new google.visualization.PieChart(document.getElementById('ethnicity_piechart'));
+      chart.draw(data, options);
     }
-  });
-</script>
-{% endblock %}
 
-<!-- Creates the map -->
-<div class="map-container">
-  <iframe
-	width="500"
-	height="350"
-	frameborder="0"
-	style="border:0"
-	src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBR5RY-Y3sGcCacuN8Xy1auBDne78xjQVo&q={{college['LATITUDE']}},{{college['LONGITUDE']}}"
-	allowfullscreen>
-  </iframe>
-</div>
+    function drawTuitionChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Type', 'Tuition Fee'],
+        ['In-state', {{ college["TUITIONFEE_IN"] }}],
+        ['Out-of-state', {{ college["TUITIONFEE_OUT"] }}]
+      ]);
 
+      var options = {
+        title: 'Tuition Fees Comparison',
+        hAxis: {title: 'Type of Tuition'},
+        vAxis: {title: 'Fee'}
+      };
+
+      var chart = new google.visualization.BarChart(document.getElementById('tuition_barchart'));
+      chart.draw(data, options);
+    }
+
+    function drawStudentDistributionChart() {
+      var data = google.visualization.arrayToDataTable([
+        ['Year', 'Number of Students'],
+        ['Freshman', {{ college["UGDS_FRESHMAN"] }}],
+        ['Sophomore', {{ college["UGDS_SOPHOMORE"] }}],
+        ['Junior', {{ college["UGDS_JUNIOR"] }}],
+        ['Senior', {{ college["UGDS_SENIOR"] }}]
+      ]);
+
+      var options = {
+        title: 'Student Distribution by Year',
+        hAxis: {title: 'Year'},
+        vAxis: {title: 'Number of Students'}
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('student_distribution_linechart'));
+      chart.draw(data, options);
+    }
+  </script>
+</head>
+<body>
+  <!-- College Information -->
+  <h2>{{ college["INSTNM"] }}</h2>
+  <table>
+    <tr><td><strong>Website:</strong> <a href='//{{college["INSTURL"]}}'>{{ college["INSTURL"] }}</a></td></tr>
+    <tr><td><strong>Address:</strong> {{ college["CITY"] }}, {{ college["STABBR"] }} {{college["ZIP"]}}</td></tr>
+    <tr><td><strong>Admission Rate:</strong> {{ college["ADM_RATE"] }}</td></tr>
+    <tr><td><strong>Average SAT:</strong> {{ college["SAT_AVG"] }}</td></tr>
+    <tr><td><strong>In-state Tuition:</strong> {{ college["TUITIONFEE_IN"] }}</td></tr>
+    <tr><td><strong>Out-of-state Tuition:</strong> {{ college["TUITIONFEE_OUT"] }}</td></tr>
+    <tr><td><strong>Undergraduate Number of Students:</strong> {{ college["UGDS"] }}</td></tr>
+  </table>
+
+  <!-- Acceptance Rate Pie Chart -->
+  <div id="acceptance_piechart" style="width: 900px; height: 500px;"></div>
+
+  <!-- Ethnicity Breakdown Pie Chart -->
+  <div id="ethnicity_piechart" style="width: 900px; height: 500px;"></div>
+
+  <!-- Tuition Fees Bar Chart -->
+  <div id="tuition_barchart" style="width: 900px; height: 500px;"></div>
+
+  <!-- Student Distribution Line Chart -->
+  <div id="student_distribution_linechart" style="width: 900px; height: 500px;"></div>
+
+  <!-- Map -->
+  <div class="map-container">
+    <iframe
+      width="500"
+      height="350"
+      frameborder="0"
+      style="border:0"
+      src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBR5RY-Y3sGcCacuN8Xy1auBDne78xjQVo&q={{college['LATITUDE']}},{{college['LONGITUDE']}}"
+      allowfullscreen>
+    </iframe>
+  </div>
+</body>
 {% endblock %}

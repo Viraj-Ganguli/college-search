@@ -1,5 +1,3 @@
-% extends 'base.html' %}
-
 {% block content %}
 <html>
   <head>
@@ -87,31 +85,30 @@
 
         // Average SAT Bar Chart
         var data2 = google.visualization.arrayToDataTable([
-          ['Category', 'Score'],
+          ['', 'Score'],
           ['Average SAT', {{college["SAT_AVG"]}}]
         ]);
 
         var options2 = {
           title: 'Average SAT Score',
-          hAxis: {title: 'Category', minValue: 0},
-          vAxis: {title: 'Score', minValue: 0}
+          hAxis: {title: 'Score', minValue: 0},
+          vAxis: {title: '', minValue: 0}
         };
 
         var chart2 = new google.visualization.BarChart(document.getElementById('barchart'));
-
         chart2.draw(data2, options2);
 
         // Tuition Fees Bar Chart
         var data3 = google.visualization.arrayToDataTable([
-          ['Category', 'Cost'],
+          ['', 'Cost'],
           ['In-state Tuition', {{college["TUITIONFEE_IN"]}}],
           ['Out-of-state Tuition', {{college["TUITIONFEE_OUT"]}}]
         ]);
 
         var options3 = {
           title: 'Tuition Fees',
-          hAxis: {title: 'Category', minValue: 0},
-          vAxis: {title: 'Cost', minValue: 0}
+          hAxis: {title: 'Cost', minValue: 0},
+          vAxis: {title: '', minValue: 0}
         };
 
         var chart3 = new google.visualization.BarChart(document.getElementById('barchart2'));

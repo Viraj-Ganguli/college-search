@@ -56,6 +56,27 @@
         var chart3 = new google.visualization.BarChart(document.getElementById('barchart2'));
 
         chart3.draw(data3, options3);
+
+        // Ethnicity Breakdown Pie Chart
+        var data4 = google.visualization.arrayToDataTable([
+          ['Ethnicity', 'Percent Students'],
+          ['White',     {{college["UGDS_WHITE"]}}],
+          ['Black or African American', {{college["UGDS_BLACK"]}}],
+          ['Hispanic', {{college["UGDS_HISP"]}}],
+          ['Asian', {{college["UGDS_ASIAN"]}}],
+          ['American Indian/Alaska Native', {{college["UGDS_AIAN"]}}],
+          ['Native Hawaiian/Pacific Islander', {{college["UGDS_NHPI"]}}],
+          ['Two or more races', {{college["UGDS_2MOR"]}}],
+          ['Non-resident alien', {{college["UGDS_NRA"]}}],
+          ['Unknown', {{college["UGDS_UNKN"]}}],
+        ]);
+
+        var options4 = {
+          title: 'Ethnicity Breakdown'
+        };
+
+        var chart4 = new google.visualization.PieChart(document.getElementById('piechart2'));
+        chart4.draw(data4, options4);
       }
     </script>
   </head>
@@ -75,6 +96,7 @@
     <div id="piechart1" style="width: 900px; height: 500px;"></div>
     <div id="barchart" style="width: 900px; height: 500px;"></div>
     <div id="barchart2" style="width: 900px; height: 500px;"></div>
+    <div id="piechart2" style="width: 900px; height: 500px;"></div>
 
     <!-- Creates the map -->
     <div class="map-container">

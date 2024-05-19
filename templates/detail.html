@@ -1,31 +1,9 @@
-% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
-<html>
-  <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
-
-        var data = google.visualization.arrayToDataTable([
-          ['Acceptence Rates', 'Percent Students'],
-          ['Accepted',     {{college["ADM_RATE"]}}],
-          ['Rejected',      {{ 1- college["ADM_RATE"]}}],
-        ]);
-
-        var options = {
-          title: 'My Daily Activities'
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-        chart.draw(data, options);
-      }
-    </script>
-
+<!-- Home button -->
+<a href="{{ url_for('home') }}" class="btn btn-primary">Home</a>
 
 <!-- displays the college information -->
 <h2>{{ college["INSTNM"] }}</h2>
@@ -39,7 +17,126 @@
 <tr><td><strong>Undergraduate Number of Students:</strong> {{ college["UGDS"] }}</td></tr>
 </table>
 
-<div id="piechart" style="width: 900px; height: 500px;"></div>
+<!-- Creates the map -->
+<div class="map-container">
+  <iframe
+	width="500"
+	height="350"
+	frameborder="0"
+	style="border:0"
+	src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBR5RY-Y3sGcCacuN8Xy1auBDne78xjQVo&q={{college['LATITUDE']}},{{college['LONGITUDE']}}"
+	allowfullscreen>
+  </iframe>
+</div>
+
+<!-- Charts displaying important data -->
+<div class="charts">
+  <canvas id="admissionRateChart" width="400" height="200"></canvas>
+  <canvas id="tuitionChart" width="400" height="200"></canvas>
+  <canvas id="studentDiversityChart" width="400" height="200"></canvas>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Data for the charts
+  const admissionRate = {{ college["ADM_RATE"] }};
+  const tuitionInState = {{ college["TUITIONFEE_IN"] }};
+  const tuitionOutState = {{ college["TUITIONFEE_OUT"] }};
+  const studentDiversity = {
+    white: {{ college["UGDS_WHITE"] }},
+    black: {{ college["UGDS_BLACK"] }},
+    hispanic: {{ college["UGDS_HISP"] }},
+    asian: {{ college["UGDS_ASIAN"] }},
+    aian: {{ college["UGDS_AIAN"] }},
+    nhpi: {{ college["UGDS_NHPI"] }},
+    twomor: {{ college["UGDS_2MOR"] }},
+    nra: {{ college["UGDS_NRA"] }},
+    unkn: {{ college["UGDS_UNKN"] }}
+  };
+
+  // Admission Rate Chart
+  new Chart(document.getElementById('admissionRateChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Admission Rate'],
+      datasets: [{
+        label: 'Admission Rate',
+        data: [admissionRate],
+        backgroundColor: ['rgba(75, 192, 192, 0.2)'],
+        borderColor: ['rgba(75, 192, 192, 1)'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  // Tuition Chart
+  new Chart(document.getElementById('tuitionChart'), {
+    type: 'bar',
+    data: {
+      labels: ['In-state', 'Out-of-state'],
+      datasets: [{
+        label: 'Tuition',
+        data: [tuitionInState, tuitionOutState],
+        backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+        borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  // Student Diversity Chart
+  new Chart(document.getElementById('studentDiversityChart'), {
+    type: 'pie',
+    data: {
+      labels: ['White', 'Black', 'Hispanic', 'Asian', 'AIAN', 'NHPI', 'Two or More', 'Non-Resident Alien', 'Unknown'],
+      datasets: [{
+        label: 'Student Diversity',
+        data: Object.values(studentDiversity),
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(255, 206, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+          'rgba(199, 199, 199, 0.2)',
+          'rgba(83, 102, 255, 0.2)',
+          'rgba(155, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+          'rgba(199, 199, 199, 1)',
+          'rgba(83, 102, 255, 1)',
+          'rgba(155, 159, 64, 1)'
+        ],
+        borderWidth: 1
+      }]
+    }
+  });
+</script>
+{% endblock %}
 
 <!-- Creates the map -->
 <div class="map-container">

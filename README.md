@@ -32,21 +32,6 @@ Upon selecting a college from the search results, you'll be directed to the coll
 - **Backend:** Python (Flask)
 - **Database:** SQLite
 - **Visualization:** Google Charts API
-
-## Setup
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/usa-college-search.git
-```
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-3. Run the application:
-```bash
-python main.py
-```
-
+  
 ## Credits
 This project was developed by Viraj Ganguli.
